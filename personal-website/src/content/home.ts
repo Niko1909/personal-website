@@ -21,7 +21,7 @@ export const experience = [
     organization: "IBM · Canada Software Lab",
     period: "2022 to 2023",
     summary:
-      "Designed cross-platform automation and document-data tools that removed more than 500 hours of manual work each week for internal teams.",
+      "Built Python automation estimated to save internal account-management teams more than 500 hours of manual work per week.",
     technologies: ["Python", "Microsoft Office APIs", "Automation"],
   },
 ];
@@ -49,16 +49,9 @@ export const productionWork = {
 };
 
 const chessProject = {
-  eyebrow: "Undergraduate thesis · 2024",
   title: "Distilling Chess Intelligence",
-  question: "Can a compact neural network learn how a powerful chess engine sees the board?",
   summary:
     "I built an end-to-end pipeline that generated 15,000 Leela Chess Zero evaluations and compared nine smaller model architectures. Deeper models fit the training data more closely, but none beat a linear baseline on held-out positions. It was a useful lesson in generalization, representation, and experimental scope.",
-  metrics: [
-    { value: "15,000", label: "LC0-labelled positions" },
-    { value: "9", label: "model architectures" },
-    { value: "~42h", label: "teacher evaluation budget" },
-  ],
   technologies: ["PyTorch", "Knowledge distillation", "CNNs", "Experimental ML"],
 };
 

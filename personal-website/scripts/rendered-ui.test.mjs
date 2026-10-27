@@ -4,13 +4,13 @@ import test from "node:test";
 
 const readPage = (path) => readFileSync(new URL(`../dist/${path}/index.html`, import.meta.url), "utf8");
 
-test("homepage illustration has 64 squares and an example LC0 target in centipawns", () => {
+test("homepage illustration has 64 squares and a sample LC0 target in centipawns", () => {
   const html = readPage(".");
   const board = html.match(/<div class="mini-board"[^>]*>(.*?)<\/div>/s)?.[1];
   assert(board, "Chess illustration is rendered");
   assert.equal([...board.matchAll(/<span\b/g)].length, 64);
   assert.equal([...board.matchAll(/<img\b/g)].length, 32);
-  assert.match(html, /Example LC0 evaluation/);
+  assert.match(html, /Sample LC0 evaluation/);
   assert.match(html, /\+37 cp/);
   assert.match(html, /Student target/);
   assert.match(html, /aria-label="Illustrative LC0 evaluation of \+37 centipawns used as a student training target"/);
