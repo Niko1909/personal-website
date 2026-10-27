@@ -11,31 +11,27 @@ export const experience = [
   {
     role: "AI Developer I",
     organization: "Intact Insurance · Data Lab",
+    logo: "/company-logos/intact.svg",
     period: "2025 to Present",
     summary:
-      "Leading frontend development for production AI applications, with responsibilities spanning backend performance, automated testing, and cloud delivery.",
-    technologies: ["TypeScript", "React", "FastAPI", "PostgreSQL", "AWS", "Terraform"],
+      "I spent a year leading frontend development for production AI applications. Since then, I’ve expanded my scope to include backend development and automated testing. I’m currently building an end-to-end test suite to improve confidence in production deployments.",
   },
   {
     role: "Software Developer Intern",
     organization: "IBM · Canada Software Lab",
+    logo: "/company-logos/ibm.svg",
     period: "2022 to 2023",
     summary:
       "Built Python automation estimated to save internal account-management teams more than 500 hours of manual work per week.",
-    technologies: ["Python", "Microsoft Office APIs", "Automation"],
   },
 ];
 
 export const productionWork = {
   title: "Production AI engineering at Intact",
-  role: "AI Developer I",
-  period: "2025 to present",
-  summary:
-    "At Intact Insurance's Data Lab, I lead frontend development for production AI applications, with responsibilities spanning backend performance, automated testing, and cloud delivery.",
   contributions: [
     {
       title: "Frontend ownership",
-      description: "Lead React and TypeScript development, extending shared application code for additional teams.",
+      description: "Led React and TypeScript development for a year, extending shared application code for additional teams.",
     },
     {
       title: "Backend modernization",
@@ -43,7 +39,7 @@ export const productionWork = {
     },
     {
       title: "Testing and delivery",
-      description: "Write automated tests with Vitest and pytest, maintain GitLab CI/CD pipelines, and contribute to AWS infrastructure through Terraform.",
+      description: "Building an end-to-end test suite that provisions real AWS resources and invokes services directly. Also write Vitest and pytest tests, maintain GitLab CI/CD pipelines, and contribute to infrastructure through Terraform.",
     },
   ],
 };
@@ -51,7 +47,7 @@ export const productionWork = {
 const chessProject = {
   title: "Distilling Chess Intelligence",
   summary:
-    "I built an end-to-end pipeline that generated 15,000 Leela Chess Zero evaluations and compared nine smaller model architectures. Deeper models fit the training data more closely, but none beat a linear baseline on held-out positions. It was a useful lesson in generalization, representation, and experimental scope.",
+    "Built a pipeline to generate 15,000 Leela Chess Zero evaluations and compare nine compact models. The convolutional models fit the training data more closely but did not beat the linear baseline on held-out positions.",
   technologies: ["PyTorch", "Knowledge distillation", "CNNs", "Experimental ML"],
 };
 
@@ -76,24 +72,15 @@ export const academicProjects = [
 
 export const capabilities = [
   {
-    index: "01",
     title: "AI & machine learning",
-    description:
-      "From experimental models to production retrieval and language-model workflows.",
     skills: ["PyTorch", "TensorFlow", "scikit-learn", "RAG", "Computer vision"],
   },
   {
-    index: "02",
     title: "Product engineering",
-    description:
-      "Interfaces and services that turn model capabilities into dependable user experiences.",
     skills: ["TypeScript", "React", "FastAPI", "PostgreSQL", "Vitest & pytest"],
   },
   {
-    index: "03",
     title: "Cloud & infrastructure",
-    description:
-      "Repeatable systems for deploying, operating, and improving intelligent products.",
     skills: ["AWS", "GCP", "Terraform", "Docker", "GitLab CI/CD", "Linux"],
   },
 ];

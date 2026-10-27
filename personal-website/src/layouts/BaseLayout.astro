@@ -25,7 +25,7 @@ const socialImageURL = new URL("/og-v2.png", Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f7f6f2" />
+    <meta name="theme-color" content="#eae8e2" />
     <meta name="color-scheme" content="light dark" />
     <script is:inline>
       (() => {
@@ -33,7 +33,7 @@ const socialImageURL = new URL("/og-v2.png", Astro.site);
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const theme = savedTheme || (prefersDark ? "dark" : "light");
         document.documentElement.dataset.theme = theme;
-        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#0c151b" : "#f7f6f2");
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#0c151b" : "#eae8e2");
       })();
     </script>
     <link rel="canonical" href={canonicalURL} />
