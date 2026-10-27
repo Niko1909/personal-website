@@ -1,0 +1,29 @@
+---
+const board = ["♜", "", "", "", "", "♚", "", "", "♟", "", "♟", "", "", "♟", "♟", "", "", "♟", "", "", "♟", "", "", "", "", "", "♗", "", "♙", "", "", "", "", "", "", "♙", "", "", "", "", "♙", "♙", "", "", "", "♙", "♙", "♙", "♖", "", "", "", "", "♖", "♔", ""];
+const pieceImages: Record<string, string> = {
+  "♙": "/chess-pieces/white-pawn.svg",
+  "♗": "/chess-pieces/white-bishop.svg",
+  "♖": "/chess-pieces/white-rook.svg",
+  "♔": "/chess-pieces/white-king.svg",
+  "♟": "/chess-pieces/black-pawn.svg",
+  "♜": "/chess-pieces/black-rook.svg",
+  "♚": "/chess-pieces/black-king.svg",
+};
+---
+
+<div class="chess-signal" aria-label="A chess position flowing through model layers to an evaluation score" role="img">
+  <div class="board-wrap">
+    <div class="mini-board" aria-hidden="true">
+      {board.map((piece) => <span>{piece && <img src={pieceImages[piece]} alt="" />}</span>)}
+    </div>
+    <span class="visual-label">Position</span>
+  </div>
+  <div class="signal-line" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i>
+  </div>
+  <div class="score-block" aria-hidden="true">
+    <span>LC0 evaluation</span>
+    <strong>+0.37</strong>
+    <small>student target</small>
+  </div>
+</div>

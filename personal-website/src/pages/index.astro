@@ -1,0 +1,140 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import ChessSignal from "../components/ChessSignal.astro";
+import {
+  profile,
+  experience,
+  productionWork,
+  academicProjects,
+  capabilities,
+} from "../content/home";
+---
+
+<BaseLayout>
+  <Header />
+  <main id="top">
+    <section class="hero container" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Fullstack AI developer · Toronto</p>
+        <h1 id="hero-title">Hey! I’m Nikolas.</h1>
+        <p class="hero-intro">
+          I’m a fullstack AI developer at <em>Intact</em>, focused on building AI-powered products that are useful, reliable, and easy to use.
+        </p>
+        <p class="hero-lede">
+          I work across the stack, from TypeScript and React interfaces to Python services and cloud infrastructure.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#work">Explore my work <span aria-hidden="true">↘</span></a>
+        </div>
+        <div class="social-links" aria-label="Professional profiles">
+          <a href={profile.github} target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+          <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="experience" class="section container" aria-labelledby="experience-title">
+      <div class="simple-section-heading">
+        <h2 id="experience-title" class="eyebrow">Experience</h2>
+      </div>
+      <div class="experience-list">
+        {experience.map((item) => (
+          <article class="experience-item">
+            <div class="experience-meta">
+              <p>{item.period}</p>
+              <h3>{item.role}</h3>
+              <p>{item.organization}</p>
+            </div>
+            <div>
+              <p class="experience-summary">{item.summary}</p>
+              <ul class="tag-list" aria-label={`${item.role} technologies`}>
+                {item.technologies.map((technology) => <li>{technology}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="work" class="section work-section" aria-labelledby="work-title">
+      <div class="container">
+        <SectionHeading id="work-title" eyebrow="Selected work" title="Production experience. Research depth." intro="Engineering work at Intact, followed by academic projects in machine learning and model evaluation." />
+        <article class="production-feature" aria-labelledby="production-title">
+          <div class="production-heading">
+            <p class="eyebrow light">Professional experience</p>
+            <h3 id="production-title">{productionWork.title}</h3>
+            <p class="production-meta">{productionWork.role} · {productionWork.period}</p>
+            <p class="production-summary">{productionWork.summary}</p>
+          </div>
+          <ul class="production-contributions" aria-label="Contributions at Intact">
+            {productionWork.contributions.map((contribution) => (
+              <li><strong>{contribution.title}</strong><p>{contribution.description}</p></li>
+            ))}
+          </ul>
+        </article>
+
+        <div class="supporting-projects">
+          {academicProjects.map((project, index) => (
+            <article>
+              <div class="project-number">0{index + 2}</div>
+              <p class="project-period">{project.period}</p>
+              <h3>{project.title}</h3>
+              <p>{project.summary}</p>
+              <ul class="tag-list" aria-label={`${project.title} technologies`}>
+                {project.technologies.map((technology) => <li>{technology}</li>)}
+              </ul>
+              {project.kind === "chess" && <div class="academic-visual"><ChessSignal /></div>}
+              <a class="project-link" href={project.href}>Read the case study<span class="sr-only">: {project.title}</span> <span aria-hidden="true">→</span></a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" aria-labelledby="profile-title">
+      <SectionHeading id="profile-title" eyebrow="Technical profile" title="From model behavior to product behavior." />
+      <div class="capability-grid">
+        {capabilities.map((capability) => (
+          <article>
+            <span class="capability-index">{capability.index}</span>
+            <h3>{capability.title}</h3>
+            <p>{capability.description}</p>
+            <ul>
+              {capability.skills.map((skill) => <li>{skill}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="about" class="section about-section" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <p class="eyebrow light">About</p>
+        <div>
+          <h2 id="about-title">Curious about the whole system.</h2>
+          <p>
+            I’m a Toronto-based developer who likes working where machine learning meets product engineering. My background in Engineering Science shaped how I approach the work: start with the underlying question, build the full path from data to interface, and be honest about what the evidence does and does not show.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-section" aria-labelledby="contact-title">
+      <div class="container contact-inner">
+        <div>
+          <p class="eyebrow">Let’s connect</p>
+          <h2 id="contact-title">Building something intelligent?</h2>
+        </div>
+        <div>
+          <p>I’m always interested in thoughtful engineering problems and teams building useful AI products.</p>
+          <a class="contact-link" href={`mailto:${profile.email}`}>{profile.email} <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

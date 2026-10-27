@@ -1,0 +1,5 @@
+# Keep local research, review artifacts, and agent configuration out of Git.
+/*
+!/.gitignore
+!/README.md
+!/personal-website/

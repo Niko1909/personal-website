@@ -1,0 +1,186 @@
+<section class="fen-explorer" aria-labelledby="fen-title">
+  <p class="eyebrow">Representing a chess position</p>
+  <h2 id="fen-title">From board state to model input.</h2>
+  <p class="fen-intro">The compact representation separates piece type from colour. Choose a channel to see exactly which squares become active.</p>
+
+  <div class="fen-strip"><span>Example FEN</span><code id="fen-value">r1b1k1nr/pppp1ppp/8/8/2B1P1nq/3P2P1/PPP2b1P/RNB1K2R w KQkq - 0 8</code></div>
+
+  <div class="channel-heading"><h3>Choose one of seven channels</h3><p id="active-count">3 active squares</p></div>
+  <div class="channels" id="channel-controls" aria-label="Tensor channels"></div>
+
+  <div class="fen-workspace">
+    <section aria-labelledby="position-title">
+      <div class="visual-heading"><h3 id="position-title">Original position</h3><p>White to move</p></div>
+      <div class="board" id="chess-board" role="grid" aria-label="Chess position. Use arrow keys to inspect squares."></div>
+    </section>
+    <section aria-labelledby="matrix-title">
+      <div class="visual-heading"><h3 id="matrix-title">Pawn channel</h3><p>8 × 8 binary matrix</p></div>
+      <div class="matrix" id="channel-matrix" role="img" aria-label="Pawn channel matrix"></div>
+    </section>
+  </div>
+
+  <div class="fen-explanation" aria-live="polite">
+    <div><h3 id="channel-copy-title">Channel 1 · Pawn</h3><p id="channel-copy-text">A value of 1 marks every pawn, regardless of colour. Piece colour is stored separately in channel 7.</p></div>
+    <div class="square-detail"><h3 id="square-title">Square e4 · White pawn</h3><p id="square-value">The pawn channel stores 1 on this square.</p><code id="square-vector">[pawn 1, knight 0, bishop 0, rook 0, queen 0, king 0, colour 1]</code></div>
+  </div>
+  <p class="source-note">Derived from the original thesis implementation. In the colour channel, empty squares and black-occupied squares both remain 0.</p>
+</section>
+
+<script>
+  const fen = document.querySelector<HTMLElement>("#fen-value")?.textContent?.trim() ?? "";
+  const boardElement = document.querySelector<HTMLElement>("#chess-board");
+  const matrixElement = document.querySelector<HTMLElement>("#channel-matrix");
+  const controlsElement = document.querySelector<HTMLElement>("#channel-controls");
+  const matrixTitle = document.querySelector<HTMLElement>("#matrix-title");
+  const activeCount = document.querySelector<HTMLElement>("#active-count");
+  const channelCopyTitle = document.querySelector<HTMLElement>("#channel-copy-title");
+  const channelCopyText = document.querySelector<HTMLElement>("#channel-copy-text");
+  const squareTitle = document.querySelector<HTMLElement>("#square-title");
+  const squareValue = document.querySelector<HTMLElement>("#square-value");
+  const squareVector = document.querySelector<HTMLElement>("#square-vector");
+
+  const files = ["a", "b", "c", "d", "e", "f", "g", "h"];
+  const pieceIndex: Record<string, number> = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 };
+  const pieceNames = ["pawn", "knight", "bishop", "rook", "queen", "king"];
+  const pieceImages: Record<string, string> = {
+    P: "/chess-pieces/white-pawn.svg", N: "/chess-pieces/white-knight.svg", B: "/chess-pieces/white-bishop.svg",
+    R: "/chess-pieces/white-rook.svg", Q: "/chess-pieces/white-queen.svg", K: "/chess-pieces/white-king.svg",
+    p: "/chess-pieces/black-pawn.svg", n: "/chess-pieces/black-knight.svg", b: "/chess-pieces/black-bishop.svg",
+    r: "/chess-pieces/black-rook.svg", q: "/chess-pieces/black-queen.svg", k: "/chess-pieces/black-king.svg",
+  };
+  const channels = [
+    { label: "Pawn", description: "A value of 1 marks every pawn, regardless of colour. Piece colour is stored separately in channel 7." },
+    { label: "Knight", description: "A value of 1 marks every knight, whether the piece is white or black." },
+    { label: "Bishop", description: "A value of 1 marks every bishop, while the colour channel distinguishes white bishops from black bishops." },
+    { label: "Rook", description: "A value of 1 marks every rook, regardless of colour." },
+    { label: "Queen", description: "A value of 1 marks every queen. This position contains one black queen and no white queen." },
+    { label: "King", description: "A value of 1 marks both kings. Their colours are represented separately in channel 7." },
+    { label: "Colour", description: "A value of 1 marks squares occupied by white pieces. Black-piece and empty squares both remain 0." },
+  ];
+
+  let activeChannel = 0;
+  let selectedRow = 4;
+  let selectedCol = 4;
+
+  const displayBoard: Array<Array<string | null>> = fen.split(" ")[0].split("/").map((rank) => {
+    const squares: Array<string | null> = [];
+    for (const token of rank) {
+      if (/\d/.test(token)) for (let i = 0; i < Number(token); i += 1) squares.push(null);
+      else squares.push(token);
+    }
+    return squares;
+  });
+
+  const tensor = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => Array(7).fill(0)));
+  displayBoard.forEach((rank, displayRow) => rank.forEach((piece, col) => {
+    if (!piece) return;
+    const tensorRow = 7 - displayRow;
+    tensor[tensorRow][col][pieceIndex[piece.toLowerCase()]] = 1;
+    tensor[tensorRow][col][6] = piece === piece.toUpperCase() ? 1 : 0;
+  }));
+
+  const coordinate = (row: number, col: number) => `${files[col]}${8 - row}`;
+  const vectorAt = (row: number, col: number) => tensor[7 - row][col];
+  const pieceDescription = (piece: string | null) => piece ? `${piece === piece.toUpperCase() ? "White" : "Black"} ${pieceNames[pieceIndex[piece.toLowerCase()]]}` : "Empty square";
+
+  function renderControls() {
+    controlsElement?.replaceChildren();
+    channels.forEach((channel, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "channel-button";
+      button.textContent = `${index + 1} · ${channel.label}`;
+      button.setAttribute("aria-pressed", String(index === activeChannel));
+      button.addEventListener("click", () => { activeChannel = index; render(); });
+      controlsElement?.append(button);
+    });
+  }
+
+  function renderBoard() {
+    boardElement?.replaceChildren();
+    displayBoard.forEach((rank, row) => rank.forEach((piece, col) => {
+      const square = document.createElement("button");
+      const selected = row === selectedRow && col === selectedCol;
+      const matches = piece && (activeChannel === 6 ? piece === piece.toUpperCase() : pieceIndex[piece.toLowerCase()] === activeChannel);
+      square.type = "button";
+      square.className = `board-square ${(row + col) % 2 === 0 ? "light" : "dark"}`;
+      square.dataset.row = String(row); square.dataset.col = String(col); square.tabIndex = selected ? 0 : -1;
+      square.setAttribute("role", "gridcell");
+      square.setAttribute("aria-label", `${coordinate(row, col)}, ${pieceDescription(piece)}`);
+      square.setAttribute("aria-current", String(selected));
+      if (piece) { const image = document.createElement("img"); const side = piece === piece.toUpperCase() ? "white-piece" : "black-piece"; image.className = `piece ${side} ${matches ? "is-active" : "is-muted"}`; image.src = pieceImages[piece]; image.alt = ""; image.setAttribute("aria-hidden", "true"); square.append(image); }
+      if (row === 7) { const label = document.createElement("span"); label.className = "coordinate file"; label.textContent = files[col]; square.append(label); }
+      if (col === 0) { const label = document.createElement("span"); label.className = "coordinate rank"; label.textContent = String(8 - row); square.append(label); }
+      square.addEventListener("click", () => selectSquare(row, col, false));
+      square.addEventListener("keydown", handleKeydown);
+      boardElement?.append(square);
+    }));
+  }
+
+  function renderMatrix() {
+    matrixElement?.replaceChildren(); let count = 0;
+    displayBoard.forEach((rank, row) => rank.forEach((_piece, col) => {
+      const value = vectorAt(row, col)[activeChannel]; count += value;
+      const cell = document.createElement("span");
+      cell.className = `matrix-cell ${value ? "is-one" : ""} ${row === selectedRow && col === selectedCol ? "is-selected" : ""}`;
+      cell.textContent = String(value); cell.setAttribute("aria-hidden", "true"); matrixElement?.append(cell);
+    }));
+    matrixElement?.setAttribute("aria-label", `${channels[activeChannel].label} channel matrix with ${count} active squares`);
+    if (activeCount) activeCount.textContent = `${count} active ${count === 1 ? "square" : "squares"}`;
+  }
+
+  function renderExplanation() {
+    const channel = channels[activeChannel]; const piece = displayBoard[selectedRow][selectedCol]; const vector = vectorAt(selectedRow, selectedCol);
+    if (matrixTitle) matrixTitle.textContent = `${channel.label} channel`;
+    if (channelCopyTitle) channelCopyTitle.textContent = `Channel ${activeChannel + 1} · ${channel.label}`;
+    if (channelCopyText) channelCopyText.textContent = channel.description;
+    if (squareTitle) squareTitle.textContent = `Square ${coordinate(selectedRow, selectedCol)} · ${pieceDescription(piece)}`;
+    if (squareValue) squareValue.textContent = `The ${channel.label.toLowerCase()} channel stores ${vector[activeChannel]} on this square.`;
+    if (squareVector) squareVector.textContent = `[${pieceNames.map((name, index) => `${name} ${vector[index]}`).join(", ")}, colour ${vector[6]}]`;
+  }
+
+  function selectSquare(row: number, col: number, focus: boolean) {
+    selectedRow = row; selectedCol = col; renderBoard(); renderMatrix(); renderExplanation();
+    if (focus) boardElement?.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${col}"]`)?.focus();
+  }
+  function handleKeydown(event: KeyboardEvent) {
+    const moves: Record<string, [number, number]> = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+    if (!moves[event.key]) return; event.preventDefault();
+    const [rowMove, colMove] = moves[event.key];
+    selectSquare(Math.max(0, Math.min(7, selectedRow + rowMove)), Math.max(0, Math.min(7, selectedCol + colMove)), true);
+  }
+  function render() { renderControls(); renderBoard(); renderMatrix(); renderExplanation(); }
+  if (boardElement && matrixElement && controlsElement) render();
+</script>
+
+<style>
+  .fen-explorer { padding: clamp(28px, 5vw, 56px); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .fen-explorer > h2 { max-width: 720px; margin: 0; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 500; line-height: 1.05; letter-spacing: -.05em; }
+  .fen-intro { max-width: 720px; margin: 16px 0 28px; color: var(--muted); }
+  .fen-strip { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; padding: 16px 20px; color: var(--code-text); background: var(--code); border-radius: 8px; }
+  .fen-strip span { color: #b8d4dd; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; }
+  .fen-strip code { overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .8rem; }
+  .channel-heading, .visual-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .channel-heading { margin: 28px 0 12px; } .channel-heading h3, .visual-heading h3 { margin: 0; font-size: .95rem; } .channel-heading p, .visual-heading p { margin: 0; color: var(--muted); font-size: .78rem; }
+  .channels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  :global(.channel-button) { min-height: 44px; padding: 8px; color: var(--ink); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font: inherit; font-size: .82rem; }
+  :global(.channel-button[aria-pressed="true"]) { color: white; background: var(--accent); border-color: var(--accent); }
+  .fen-workspace { margin-top: 30px; display: grid; grid-template-columns: .92fr 1.08fr; gap: 32px; }
+  .board, .matrix { width: 100%; aspect-ratio: 1; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); margin-top: 10px; border: 1px solid var(--border); }
+  :global(.board-square) { position: relative; min-width: 0; padding: 0; display: grid; place-items: center; color: var(--ink); border: 0; cursor: pointer; }
+  :global(.board-square.light) { background: #eef3f2; } :global(.board-square.dark) { background: #6d929f; }
+  :global(.piece) { width: 72%; height: 72%; object-fit: contain; transition: opacity 160ms, transform 160ms; }
+  :global(.piece.white-piece) { filter: drop-shadow(0 1px 1px rgb(19 42 58 / 35%)); }
+  :global(.piece.black-piece) { filter: drop-shadow(0 1px 1px rgb(247 251 252 / 22%)); }
+  :global(.piece.is-muted) { opacity: .42; } :global(.piece.is-active) { transform: scale(1.08); }
+  :global(.coordinate) { position: absolute; font-size: .55rem; font-weight: 700; opacity: .75; } :global(.coordinate.file) { right: 3px; bottom: 1px; } :global(.coordinate.rank) { left: 3px; top: 1px; }
+  :global(.board-square[aria-current="true"]::after), :global(.matrix-cell.is-selected::after) { content: ""; position: absolute; inset: 3px; border: 3px solid #c4512f; pointer-events: none; }
+  :global(.matrix-cell) { position: relative; display: grid; place-items: center; color: var(--muted); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .82rem; }
+  :global(.matrix-cell.is-one) { color: white; background: var(--accent); }
+  .fen-explanation { margin-top: 30px; padding-top: 24px; display: grid; grid-template-columns: 1.15fr .85fr; gap: 24px; border-top: 1px solid var(--border); }
+  .fen-explanation h3 { margin: 0 0 8px; font-size: 1.05rem; } .fen-explanation p { margin: 0; color: var(--muted); font-size: .9rem; }
+  .square-detail { padding-left: 20px; border-left: 3px solid var(--accent); } .square-detail code { display: block; margin-top: 10px; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .75rem; }
+  .source-note { margin: 28px 0 0; color: var(--muted); font-size: .75rem; }
+  @media (max-width: 800px) { .channels { grid-template-columns: repeat(4, 1fr); } .fen-workspace, .fen-explanation { grid-template-columns: 1fr; } .fen-workspace section { width: min(100%, 540px); } }
+  @media (max-width: 480px) { .fen-explorer { padding: 24px 16px; } .fen-strip { grid-template-columns: 1fr; gap: 6px; } .channels { grid-template-columns: repeat(2, 1fr); } .channel-heading, .visual-heading { align-items: flex-start; flex-direction: column; gap: 4px; } .square-detail { padding: 16px 0 0; border-top: 3px solid var(--accent); border-left: 0; } }
+</style>

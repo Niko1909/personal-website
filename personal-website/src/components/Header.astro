@@ -1,0 +1,76 @@
+---
+import { profile } from "../content/home";
+
+const home = Astro.url.pathname === "/" ? "" : "/";
+---
+
+<header class="site-header" data-site-header>
+  <div class="container header-inner">
+    <a class="wordmark" href={`${home}#top`} aria-label="Nikolas Marinkovich, home">
+      <span class="wordmark-mark" aria-hidden="true">NM</span>
+      <span>{profile.name}</span>
+    </a>
+
+    <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
+      <a href={`${home}#work`}>Work</a>
+      <a href={`${home}#experience`}>Experience</a>
+      <a href={`${home}#about`}>About</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <span class="theme-icon theme-icon-light" aria-hidden="true">☼</span>
+        <span class="theme-icon theme-icon-dark" aria-hidden="true">◐</span>
+      </button>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
+  const menuButton = header?.querySelector<HTMLButtonElement>(".menu-button");
+  const nav = header?.querySelector<HTMLElement>(".site-nav");
+  const themeToggle = header?.querySelector<HTMLButtonElement>(".theme-toggle");
+
+  function updateThemeControl() {
+    const isDark = document.documentElement.dataset.theme === "dark";
+    themeToggle?.setAttribute("aria-pressed", String(isDark));
+    themeToggle?.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} mode`);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#0c151b" : "#f7f6f2");
+  }
+
+  function closeMenu() {
+    header?.removeAttribute("data-menu-open");
+    menuButton?.setAttribute("aria-expanded", "false");
+    menuButton?.querySelector(".sr-only")?.replaceChildren("Open navigation");
+  }
+
+  menuButton?.addEventListener("click", () => {
+    const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+    menuButton.setAttribute("aria-expanded", String(!isOpen));
+    header?.toggleAttribute("data-menu-open", !isOpen);
+    menuButton.querySelector(".sr-only")?.replaceChildren(isOpen ? "Open navigation" : "Close navigation");
+  });
+
+  themeToggle?.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem("theme", nextTheme);
+    updateThemeControl();
+  });
+
+  updateThemeControl();
+
+  nav?.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeMenu();
+      menuButton?.focus();
+    }
+  });
+</script>

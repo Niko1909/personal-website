@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { Content, frontmatter } from "../../../content/case-studies/intracranial-hemorrhage-detection.md";
+
+const title = `${frontmatter.title} · Nikolas Marinkovich`;
+const description = frontmatter.subtitle;
+---
+
+<BaseLayout {title} {description}>
+  <Header />
+  <main id="top" class="medical-case container">
+    <a class="back-link" href="/#work"><span aria-hidden="true">←</span> Selected work</a>
+    <p class="eyebrow">Engineering capstone · University of Toronto · 2023</p>
+    <article class="case-copy" aria-label="Intracranial Hemorrhage Detection case study">
+      <Content />
+    </article>
+    <ul class="tag-list" aria-label="Project technologies">
+      {frontmatter.technologies.map((technology: string) => <li>{technology}</li>)}
+    </ul>
+    <nav class="case-nav" aria-label="Case study navigation">
+      <a href="/#work"><span aria-hidden="true">←</span> Back to selected work</a>
+      <a href="/work/distilling-chess-intelligence/">Explore the chess case study <span aria-hidden="true">→</span></a>
+    </nav>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .medical-case { max-width: 808px; padding-block: clamp(56px, 8vw, 96px); }
+  .back-link { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: .86rem; }
+  .medical-case > .eyebrow { margin: 48px 0 20px; }
+  .case-copy { min-width: 0; }
+  .case-copy :global(h1) { margin: 0 0 32px; font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 500; line-height: 1.02; letter-spacing: -.055em; }
+  .case-copy :global(h2) { margin: 64px 0 24px; padding-top: 32px; border-top: 1px solid var(--border); font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 500; line-height: 1.12; letter-spacing: -.035em; }
+  .case-copy :global(p) { margin: 20px 0; color: var(--muted); font-size: 1.03rem; }
+  .case-copy :global(h1 + p) { color: var(--ink); font-size: 1.15rem; }
+  .case-copy :global(table) { width: 100%; margin-block: 28px; border-collapse: collapse; font-size: .95rem; }
+  .case-copy :global(th), .case-copy :global(td) { padding: 14px 16px; border: 1px solid var(--border); }
+  .case-copy :global(th) { color: var(--ink); background: var(--accent-soft); }
+  .case-copy :global(td:last-child) { font-family: var(--font-mono); font-size: .86rem; }
+  .case-nav { margin-top: 40px; padding-top: 28px; display: flex; justify-content: space-between; gap: 24px; border-top: 1px solid var(--border); }
+  .case-nav a { color: var(--accent); font-weight: 500; }
+  @media (max-width: 520px) { .case-nav { flex-direction: column; } .case-copy :global(th), .case-copy :global(td) { padding: 12px; } }
+</style>

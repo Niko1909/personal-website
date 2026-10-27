@@ -1,0 +1,75 @@
+<figure class="pipeline" aria-labelledby="pipeline-title" aria-describedby="pipeline-description">
+  <figcaption>
+    <p class="eyebrow">Knowledge distillation</p>
+    <h2 id="pipeline-title">One position. Two paths.</h2>
+    <p id="pipeline-description">The teacher supplies a target evaluation. The compact student learns to approximate it from the same position.</p>
+  </figcaption>
+
+  <div class="pipeline-grid">
+    <article class="pipeline-card source-card">
+      <span class="step">01 · Source</span>
+      <h3>Chess position</h3>
+      <div class="source-board" aria-hidden="true"></div>
+      <code>rnbqkbnr/<br />pppppppp/<br />8/8/8/8/<br />PPPPPPPP/<br />RNBQKBNR</code>
+      <p>FEN stores a complete board state in one compact string.</p>
+    </article>
+
+    <div class="pipeline-paths">
+      <article class="pipeline-card teacher-card">
+        <span class="path-label">Teacher path</span>
+        <span class="step">02A · Label</span>
+        <h3>LC0 evaluates</h3>
+        <p>Ten seconds of engine analysis produces the target score.</p>
+        <strong>+84 <small>centipawns</small></strong>
+      </article>
+      <article class="pipeline-card student-card">
+        <span class="path-label">Student path</span>
+        <span class="step">02B · Learn</span>
+        <h3>8 × 8 × 7 tensor</h3>
+        <p>Piece type, colour, and location pass through a compact model.</p>
+        <strong>+71 <small>centipawns</small></strong>
+      </article>
+    </div>
+
+    <article class="pipeline-card compare-card">
+      <span class="step">03 · Compare</span>
+      <h3>L1 error</h3>
+      <p>The absolute difference trains the student.</p>
+      <strong>|84 − 71|</strong>
+      <span class="error-value">13 cp</span>
+    </article>
+  </div>
+  <p class="pipeline-note">Repeated across <strong>15,000 positions</strong> and <strong>nine student architectures</strong>. Scores shown here are illustrative.</p>
+</figure>
+
+<style>
+  .pipeline { margin: 0; padding: clamp(28px, 5vw, 56px); color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  figcaption { max-width: 720px; }
+  figcaption h2 { margin: 0; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.05em; }
+  figcaption > p:last-child { margin: 16px 0 0; color: var(--muted); font-size: 1.02rem; }
+  .pipeline-grid { margin-top: 40px; display: grid; grid-template-columns: .9fr 1fr .75fr; gap: 24px; align-items: stretch; }
+  .pipeline-card { position: relative; padding: 24px; background: var(--canvas); border: 1px solid var(--border); border-radius: 8px; }
+  .pipeline-card h3 { margin: 8px 0 10px; font-size: 1.25rem; }
+  .pipeline-card p { margin: 0; color: var(--muted); font-size: .9rem; }
+  .step, .path-label { color: var(--accent); font-family: var(--font-mono); font-size: .66rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .path-label { display: block; margin: 0 0 12px; }
+  .source-card { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: start; }
+  .source-card .step, .source-card h3, .source-card p { grid-column: 1 / -1; }
+  .source-card code { align-self: center; font-family: var(--font-mono); font-size: clamp(.55rem, 1vw, .72rem); line-height: 1.7; }
+  .source-board { aspect-ratio: 1; background-color: var(--accent-soft); background-image: linear-gradient(45deg, var(--accent) 25%, transparent 25%, transparent 75%, var(--accent) 75%), linear-gradient(45deg, var(--accent) 25%, transparent 25%, transparent 75%, var(--accent) 75%); background-position: 0 0, 14px 14px; background-size: 28px 28px; border: 1px solid var(--border); }
+  .pipeline-paths { display: grid; gap: 24px; }
+  .pipeline-paths article { padding-top: 24px; }
+  .teacher-card { border-top: 5px solid var(--accent); }
+  .student-card { border-top: 5px solid var(--ink); }
+  .pipeline-card strong { display: block; margin-top: 16px; font-family: var(--font-mono); font-size: 1.5rem; }
+  .pipeline-card strong small { display: block; color: var(--muted); font-family: var(--font-sans); font-size: .7rem; font-weight: 400; }
+  .compare-card { display: flex; flex-direction: column; justify-content: center; color: white; background: var(--code); border-color: var(--code); }
+  .compare-card p { color: #b9cbd2; }
+  .compare-card .step { color: #a9d0dc; }
+  .compare-card strong { font-size: 1.15rem; }
+  .error-value { margin-top: 8px; color: #a9d0dc; font-family: var(--font-mono); font-size: 2.2rem; font-weight: 600; }
+  .pipeline-note { margin: 28px 0 0; color: var(--muted); font-size: .82rem; }
+  .pipeline-note strong { color: var(--ink); }
+  @media (max-width: 820px) { .pipeline-grid { grid-template-columns: 1fr; gap: 38px; } .pipeline-paths { gap: 38px; } .compare-card { min-height: 230px; } }
+  @media (max-width: 480px) { .pipeline { padding: 24px 18px; } .source-card { grid-template-columns: .85fr 1.15fr; } }
+</style>
