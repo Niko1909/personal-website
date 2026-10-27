@@ -30,12 +30,16 @@ The older chess and production Markdown drafts are archived local references, ex
 
 - Project: `nikolasmarinkovich`
 - Address: https://nikolasmarinkovich.pages.dev
-- Hosting: free Pages plan, Direct Upload
+- Hosting: free Pages plan, deployed by GitHub Actions
 
-Nikolas handles deployment manually. Agents may prepare, check, commit, push, and package approved changes; leave Cloudflare uploads and publication to Nikolas unless he explicitly requests otherwise.
+Pushes to `main` run the workflow in `.github/workflows/deploy.yml`: install dependencies, check Astro, build, test, then upload `dist/` to the existing Cloudflare Pages project. A failed check prevents deployment. Other branches do not deploy.
 
-To update the site, run the checks and build above, then open this project in Cloudflare's **Workers & Pages** dashboard and create a production deployment by uploading the contents of `dist/` (or a ZIP with `index.html` at its root).
+Keep unapproved changes on a working branch. Nikolas controls publication by approving what is merged or pushed to `main`; agents should not push there without authorization to publish.
+
+The repository needs the Actions secret `CLOUDFLARE_API_TOKEN`, with **Account → Cloudflare Pages → Edit** access limited to the hosting account. Add or rotate it through GitHub's **Settings → Secrets and variables → Actions**; never put it in source files. The Cloudflare account ID and project name are configured in the workflow.
+
+Follow deployment results in the repository's **Actions** tab. To retry a failed deployment after fixing credentials or a transient error, use **Re-run failed jobs**. Manual Cloudflare uploads remain available as a fallback.
 
 Upload only the built output. Source drafts, research documents, and private resumes must not be included. The public site intentionally has no downloadable resume.
 
-This project does not automatically deploy Git commits. Direct Upload projects can also deploy through Wrangler; Cloudflare requires a new Pages project to switch to its Git integration.
+Cloudflare's native Git integration is not used: the existing Direct Upload project is deployed through Wrangler in GitHub Actions, preserving its `pages.dev` address.

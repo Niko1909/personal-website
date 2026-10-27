@@ -12,4 +12,4 @@ npm run dev
 
 Before deploying, run `npm run check` and `npm run build` from that directory.
 
-Only website source, required content, assets, and setup files are versioned. Local research, review drafts, and private resumes are excluded. Cloudflare currently uses Direct Upload; Git pushes do not deploy the site.
+Only website source, required content, assets, and setup files are versioned. Local research, review drafts, and private resumes are excluded. Pushes to `main` deploy the site through GitHub Actions after checks pass; working branches do not deploy. See the application's README for deployment credentials and troubleshooting.
