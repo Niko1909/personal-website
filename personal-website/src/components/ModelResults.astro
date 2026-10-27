@@ -26,11 +26,11 @@ const position = (value: number) => `${((value - 200) / 35) * 100}%`;
   <div class="chart-heading"><div><h3>Held-out mean absolute error by architecture</h3><p>Approximately 3,000 held-out positions · lower error is better</p></div><span>← Lower is better</span></div>
   <div class="chart-scroll">
     <div class="chart" role="img" tabindex="0" aria-label="Nine model architectures compared by held-out mean absolute error in centipawns. The linear baseline is best at 205.10 centipawns." aria-describedby="results-data">
-      <div class="axis" aria-hidden="true"><span>Architecture</span><span class="axis-scale"><span>200</span><span>210</span><span>220</span><span>230</span><span>235</span></span><span>MAE · cp</span></div>
+      <div class="axis" aria-hidden="true"><span>Architecture</span><span class="axis-scale">{[200, 210, 220, 230, 235].map((value) => <span style={`left:${position(value)}`}>{value}</span>)}</span><span>MAE · cp</span></div>
       {results.map((result) => (
         <div class:list={["result-row", result.kind === "baseline" && "is-baseline"]}>
           <div class="model-name"><span>{result.family}</span><small>{result.layers}</small></div>
-          <div class="track" aria-hidden="true"><span class="baseline-guide"></span><span class:list={["dot", result.kind]} style={`--position:${position(result.value)}`}></span></div>
+          <div class="track" aria-hidden="true"><span class="baseline-guide" style={`left:${position(results[0].value)}`}></span><span class:list={["dot", result.kind]} style={`--position:${position(result.value)}`}></span></div>
           <strong>{result.value.toFixed(2)}</strong>
         </div>
       ))}
@@ -61,12 +61,12 @@ const position = (value: number) => `${((value - 200) / 35) * 100}%`;
   .chart-scroll { overflow-x: auto; }
   .chart { min-width: 590px; padding: 22px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
   .axis, .result-row { display: grid; grid-template-columns: 180px minmax(250px, 1fr) 76px; gap: 16px; align-items: center; }
-  .axis { margin-bottom: 8px; color: var(--muted); font-family: var(--font-mono); font-size: .66rem; } .axis-scale { display: flex; justify-content: space-between; } .axis > span:last-child { text-align: right; }
+  .axis { margin-bottom: 8px; color: var(--muted); font-family: var(--font-mono); font-size: .66rem; } .axis-scale { position: relative; height: 1.65em; } .axis-scale > span { position: absolute; transform: translateX(-50%); } .axis > span:last-child { text-align: right; }
   .result-row { min-height: 52px; border-top: 1px solid var(--border); }
   .result-row.is-baseline { margin: 0 -10px; padding: 0 10px; background: var(--accent-soft); border-top-color: transparent; border-radius: 6px; }
   .model-name { display: grid; grid-template-columns: 62px 1fr; align-items: center; gap: 8px; } .model-name span { font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; } .model-name small { color: var(--muted); }
   .track { position: relative; height: 24px; } .track::before { content: ""; position: absolute; top: 11px; right: 0; left: 0; height: 2px; background: var(--border); }
-  .baseline-guide { position: absolute; top: 0; bottom: 0; left: 14.57%; width: 1px; background: color-mix(in srgb, var(--accent) 42%, transparent); }
+  .baseline-guide { position: absolute; top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--accent) 42%, transparent); }
   .dot { position: absolute; top: 4px; left: var(--position); width: 16px; height: 16px; border: 3px solid var(--surface); border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 0 1px currentColor; } .dot.baseline { color: var(--ink); background: var(--ink); border-radius: 3px; transform: translateX(-50%) rotate(45deg); } .dot.conv2d { color: #9b654e; background: #9b654e; } .dot.conv3d { color: var(--accent); background: var(--accent); }
   .result-row > strong { text-align: right; font-family: var(--font-mono); font-size: .82rem; }
   .legend { margin-top: 16px; display: flex; gap: 18px; color: var(--muted); font-size: .75rem; } .legend span { display: flex; align-items: center; gap: 7px; } .legend i { width: 9px; height: 9px; border-radius: 50%; } .legend i.baseline { background: var(--ink); border-radius: 2px; transform: rotate(45deg); } .legend i.conv2d { background: #9b654e; } .legend i.conv3d { background: var(--accent); }

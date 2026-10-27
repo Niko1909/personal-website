@@ -8,7 +8,8 @@
     "build": "astro build",
     "postbuild": "node scripts/check-metadata.mjs",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "npm run build && node --test scripts/rendered-ui.test.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "latest",

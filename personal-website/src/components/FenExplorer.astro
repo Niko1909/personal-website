@@ -91,30 +91,39 @@
       button.className = "channel-button";
       button.textContent = `${index + 1} · ${channel.label}`;
       button.setAttribute("aria-pressed", String(index === activeChannel));
-      button.addEventListener("click", () => { activeChannel = index; render(); });
+      button.addEventListener("click", () => {
+        activeChannel = index; render();
+        controlsElement?.querySelectorAll<HTMLButtonElement>("button")[index]?.focus();
+      });
       controlsElement?.append(button);
     });
   }
 
   function renderBoard() {
     boardElement?.replaceChildren();
-    displayBoard.forEach((rank, row) => rank.forEach((piece, col) => {
-      const square = document.createElement("button");
-      const selected = row === selectedRow && col === selectedCol;
-      const matches = piece && (activeChannel === 6 ? piece === piece.toUpperCase() : pieceIndex[piece.toLowerCase()] === activeChannel);
-      square.type = "button";
-      square.className = `board-square ${(row + col) % 2 === 0 ? "light" : "dark"}`;
-      square.dataset.row = String(row); square.dataset.col = String(col); square.tabIndex = selected ? 0 : -1;
-      square.setAttribute("role", "gridcell");
-      square.setAttribute("aria-label", `${coordinate(row, col)}, ${pieceDescription(piece)}`);
-      square.setAttribute("aria-current", String(selected));
-      if (piece) { const image = document.createElement("img"); const side = piece === piece.toUpperCase() ? "white-piece" : "black-piece"; image.className = `piece ${side} ${matches ? "is-active" : "is-muted"}`; image.src = pieceImages[piece]; image.alt = ""; image.setAttribute("aria-hidden", "true"); square.append(image); }
-      if (row === 7) { const label = document.createElement("span"); label.className = "coordinate file"; label.textContent = files[col]; square.append(label); }
-      if (col === 0) { const label = document.createElement("span"); label.className = "coordinate rank"; label.textContent = String(8 - row); square.append(label); }
-      square.addEventListener("click", () => selectSquare(row, col, false));
-      square.addEventListener("keydown", handleKeydown);
-      boardElement?.append(square);
-    }));
+    displayBoard.forEach((rank, row) => {
+      const boardRow = document.createElement("div");
+      boardRow.className = "board-row";
+      boardRow.setAttribute("role", "row");
+      rank.forEach((piece, col) => {
+        const square = document.createElement("button");
+        const selected = row === selectedRow && col === selectedCol;
+        const matches = piece && (activeChannel === 6 ? piece === piece.toUpperCase() : pieceIndex[piece.toLowerCase()] === activeChannel);
+        square.type = "button";
+        square.className = `board-square ${(row + col) % 2 === 0 ? "light" : "dark"}`;
+        square.dataset.row = String(row); square.dataset.col = String(col); square.tabIndex = selected ? 0 : -1;
+        square.setAttribute("role", "gridcell");
+        square.setAttribute("aria-label", `${coordinate(row, col)}, ${pieceDescription(piece)}`);
+        square.setAttribute("aria-current", String(selected));
+        if (piece) { const image = document.createElement("img"); const side = piece === piece.toUpperCase() ? "white-piece" : "black-piece"; image.className = `piece ${side} ${matches ? "is-active" : "is-muted"}`; image.src = pieceImages[piece]; image.alt = ""; image.setAttribute("aria-hidden", "true"); square.append(image); }
+        if (row === 7) { const label = document.createElement("span"); label.className = "coordinate file"; label.textContent = files[col]; square.append(label); }
+        if (col === 0) { const label = document.createElement("span"); label.className = "coordinate rank"; label.textContent = String(8 - row); square.append(label); }
+        square.addEventListener("click", () => selectSquare(row, col));
+        square.addEventListener("keydown", handleKeydown);
+        boardRow.append(square);
+      });
+      boardElement?.append(boardRow);
+    });
   }
 
   function renderMatrix() {
@@ -139,15 +148,15 @@
     if (squareVector) squareVector.textContent = `[${pieceNames.map((name, index) => `${name} ${vector[index]}`).join(", ")}, colour ${vector[6]}]`;
   }
 
-  function selectSquare(row: number, col: number, focus: boolean) {
+  function selectSquare(row: number, col: number) {
     selectedRow = row; selectedCol = col; renderBoard(); renderMatrix(); renderExplanation();
-    if (focus) boardElement?.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${col}"]`)?.focus();
+    boardElement?.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${col}"]`)?.focus();
   }
   function handleKeydown(event: KeyboardEvent) {
     const moves: Record<string, [number, number]> = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
     if (!moves[event.key]) return; event.preventDefault();
     const [rowMove, colMove] = moves[event.key];
-    selectSquare(Math.max(0, Math.min(7, selectedRow + rowMove)), Math.max(0, Math.min(7, selectedCol + colMove)), true);
+    selectSquare(Math.max(0, Math.min(7, selectedRow + rowMove)), Math.max(0, Math.min(7, selectedCol + colMove)));
   }
   function render() { renderControls(); renderBoard(); renderMatrix(); renderExplanation(); }
   if (boardElement && matrixElement && controlsElement) render();
@@ -164,19 +173,21 @@
   .channel-heading { margin: 28px 0 12px; } .channel-heading h3, .visual-heading h3 { margin: 0; font-size: .95rem; } .channel-heading p, .visual-heading p { margin: 0; color: var(--muted); font-size: .78rem; }
   .channels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
   :global(.channel-button) { min-height: 44px; padding: 8px; color: var(--ink); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font: inherit; font-size: .82rem; }
-  :global(.channel-button[aria-pressed="true"]) { color: white; background: var(--accent); border-color: var(--accent); }
+  :global(.channel-button[aria-pressed="true"]) { color: var(--accent-foreground); background: var(--accent); border-color: var(--accent); }
   .fen-workspace { margin-top: 30px; display: grid; grid-template-columns: .92fr 1.08fr; gap: 32px; }
   .board, .matrix { width: 100%; aspect-ratio: 1; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); margin-top: 10px; border: 1px solid var(--border); }
+  .board { grid-template-columns: 1fr; }
+  :global(.board-row) { display: grid; grid-template-columns: repeat(8, 1fr); min-height: 0; }
   :global(.board-square) { position: relative; min-width: 0; padding: 0; display: grid; place-items: center; color: var(--ink); border: 0; cursor: pointer; }
   :global(.board-square.light) { background: #eef3f2; } :global(.board-square.dark) { background: #6d929f; }
   :global(.piece) { width: 72%; height: 72%; object-fit: contain; transition: opacity 160ms, transform 160ms; }
   :global(.piece.white-piece) { filter: drop-shadow(0 1px 1px rgb(19 42 58 / 35%)); }
   :global(.piece.black-piece) { filter: drop-shadow(0 1px 1px rgb(247 251 252 / 22%)); }
   :global(.piece.is-muted) { opacity: .42; } :global(.piece.is-active) { transform: scale(1.08); }
-  :global(.coordinate) { position: absolute; font-size: .55rem; font-weight: 700; opacity: .75; } :global(.coordinate.file) { right: 3px; bottom: 1px; } :global(.coordinate.rank) { left: 3px; top: 1px; }
+  :global(.coordinate) { position: absolute; color: #0c151b; font-size: .55rem; font-weight: 700; } :global(.coordinate.file) { right: 3px; bottom: 1px; } :global(.coordinate.rank) { left: 3px; top: 1px; }
   :global(.board-square[aria-current="true"]::after), :global(.matrix-cell.is-selected::after) { content: ""; position: absolute; inset: 3px; border: 3px solid #c4512f; pointer-events: none; }
   :global(.matrix-cell) { position: relative; display: grid; place-items: center; color: var(--muted); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .82rem; }
-  :global(.matrix-cell.is-one) { color: white; background: var(--accent); }
+  :global(.matrix-cell.is-one) { color: var(--accent-foreground); background: var(--accent); }
   .fen-explanation { margin-top: 30px; padding-top: 24px; display: grid; grid-template-columns: 1.15fr .85fr; gap: 24px; border-top: 1px solid var(--border); }
   .fen-explanation h3 { margin: 0 0 8px; font-size: 1.05rem; } .fen-explanation p { margin: 0; color: var(--muted); font-size: .9rem; }
   .square-detail { padding-left: 20px; border-left: 3px solid var(--accent); } .square-detail code { display: block; margin-top: 10px; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .75rem; }

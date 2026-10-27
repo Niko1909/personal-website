@@ -7,6 +7,7 @@ npm ci
 npm run dev
 npm run check
 npm run build
+npm test
 ```
 
 The build creates `dist/` and checks canonical and social-image metadata on every generated page. Production URLs use `site` in `astro.config.mjs`.

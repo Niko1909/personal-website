@@ -1,17 +1,16 @@
 ---
-const board = ["♜", "", "", "", "", "♚", "", "", "♟", "", "♟", "", "", "♟", "♟", "", "", "♟", "", "", "♟", "", "", "", "", "", "♗", "", "♙", "", "", "", "", "", "", "♙", "", "", "", "", "♙", "♙", "", "", "", "♙", "♙", "♙", "♖", "", "", "", "", "♖", "♔", ""];
+// Italian Game after 1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5.
+const fen = "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4";
+const board = [...fen.split(" ")[0].replaceAll("/", "")].flatMap((token) => /\d/.test(token) ? Array(Number(token)).fill("") : [token]);
 const pieceImages: Record<string, string> = {
-  "♙": "/chess-pieces/white-pawn.svg",
-  "♗": "/chess-pieces/white-bishop.svg",
-  "♖": "/chess-pieces/white-rook.svg",
-  "♔": "/chess-pieces/white-king.svg",
-  "♟": "/chess-pieces/black-pawn.svg",
-  "♜": "/chess-pieces/black-rook.svg",
-  "♚": "/chess-pieces/black-king.svg",
+  P: "/chess-pieces/white-pawn.svg", N: "/chess-pieces/white-knight.svg", B: "/chess-pieces/white-bishop.svg",
+  R: "/chess-pieces/white-rook.svg", Q: "/chess-pieces/white-queen.svg", K: "/chess-pieces/white-king.svg",
+  p: "/chess-pieces/black-pawn.svg", n: "/chess-pieces/black-knight.svg", b: "/chess-pieces/black-bishop.svg",
+  r: "/chess-pieces/black-rook.svg", q: "/chess-pieces/black-queen.svg", k: "/chess-pieces/black-king.svg",
 };
 ---
 
-<div class="chess-signal" aria-label="A chess position flowing through model layers to an evaluation score" role="img">
+<div class="chess-signal" aria-label="Illustrative LC0 evaluation of +37 centipawns used as a student training target" role="img">
   <div class="board-wrap">
     <div class="mini-board" aria-hidden="true">
       {board.map((piece) => <span>{piece && <img src={pieceImages[piece]} alt="" />}</span>)}
@@ -22,8 +21,8 @@ const pieceImages: Record<string, string> = {
     <i></i><i></i><i></i><i></i><i></i>
   </div>
   <div class="score-block" aria-hidden="true">
-    <span>LC0 evaluation</span>
-    <strong>+0.37</strong>
-    <small>student target</small>
+    <span>Sample LC0 evaluation</span>
+    <strong>+37 cp</strong>
+    <small>Student target</small>
   </div>
 </div>
