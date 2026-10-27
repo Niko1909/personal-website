@@ -18,7 +18,7 @@ technologies:
   - Docker
   - AWS EC2
 card_title: "Intracranial Hemorrhage Detection"
-card_summary: "As part of a five-person capstone team working with Trillium Health Partners, I focused on CT-image preprocessing and model evaluation. I worked on preparing 500,000+ DICOM images using pydicom and CT windowing, then analyzed predictions across five hemorrhage subtypes and overall detection on 78,545 test images. The team's baseline achieved an F1 score of 0.852 for detecting any hemorrhage, with substantial variation across subtypes."
+card_summary: "Worked on CT-image preprocessing and results analysis in a five-person capstone with Trillium Health Partners. Evaluation on 78,545 public test images showed strong overall detection alongside substantial weaknesses in individual hemorrhage subtypes."
 card_metrics:
   - value: "78,545"
     label: "public-dataset test images"

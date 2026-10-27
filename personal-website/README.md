@@ -19,7 +19,7 @@ Edit the published copy in these files:
 | Section | Authoritative source |
 | --- | --- |
 | Homepage experience, production feature, project cards, and skills | `src/content/home.ts` |
-| Homepage introduction, About, and contact | `src/pages/index.astro` |
+| Homepage introduction and contact | `src/pages/index.astro` |
 | Chess case-study narrative | `src/pages/work/distilling-chess-intelligence.astro` |
 | Chess pipeline, explorer, and results | Their components in `src/components/` |
 | Medical case study and its homepage summary | `content/case-studies/intracranial-hemorrhage-detection.md` |

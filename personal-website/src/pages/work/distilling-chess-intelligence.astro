@@ -23,36 +23,56 @@ const technologies = ["Python", "PyTorch", "NumPy", "python-chess", "Leela Chess
           <p class="case-subtitle">Testing whether small neural networks can reproduce how Leela Chess Zero evaluates chess positions.</p>
         </div>
         <dl class="case-meta">
-          <div><dt>Role</dt><dd>Machine-learning research and implementation</dd></div>
           <div><dt>Institution</dt><dd>University of Toronto Engineering Science</dd></div>
           <div><dt>Guidance</dt><dd><a href="https://www.cs.toronto.edu/~guerzhoy/" target="_blank" rel="noreferrer">Professor Michael Guerzhoy</a></dd></div>
         </dl>
       </div>
       <ul class="tag-list" aria-label="Project technologies">{technologies.map((technology) => <li>{technology}</li>)}</ul>
+      <dl class="case-summary">
+        <div><dt>My contribution</dt><dd>I wrote the experiment code, generated 15,000 teacher-labelled positions, trained nine models, and analyzed the results. Professor Guerzhoy provided theoretical guidance and helped define the experimental direction.</dd></div>
+        <div><dt>Outcome</dt><dd>None of the eight convolutional students beat the linear baseline on held-out positions in this experiment. The baseline’s mean absolute error was 205.10 centipawns.</dd></div>
+      </dl>
+      <a class="project-link" href="https://github.com/Niko1909/Thesis-2024" target="_blank" rel="noreferrer">View thesis repository <span aria-hidden="true">↗</span></a>
     </header>
 
-    <section class="wide-section container" aria-label="Experiment overview">
-      <ExperimentPipeline />
-    </section>
+    <div class="case-layout">
+      <aside class="case-toc">
+        <nav class="section-nav" aria-label="On this page">
+          <p class="eyebrow">Contents</p>
+          <ol>
+            <li><a href="#question-title">01 · Research question</a></li>
+            <li><a href="#experiment-title">02 · Experiment</a></li>
+            <li><a href="#data-title">03 · Data pipeline</a></li>
+            <li><a href="#representation-title">04 · Representation</a></li>
+            <li><a href="#models-title">05 · Student architectures</a></li>
+            <li><a href="#results-title">06 · Held-out performance</a></li>
+            <li><a href="#conclusion-title">07 · Limitations & next steps</a></li>
+          </ol>
+        </nav>
+      </aside>
 
+      <div class="case-content">
     <article class="case-body">
       <section class="prose-section" aria-labelledby="question-title">
         <p class="section-number">01 · Research question</p>
         <h2 id="question-title">Can a small model learn how a chess engine sees the board?</h2>
-        <p class="lede">Chess combines simple rules with a search space large enough to demand sophisticated evaluation, planning, and pattern recognition. I wanted to investigate what makes a strong chess engine effective.</p>
         <p>My undergraduate thesis began with a broad question: why did computers surpass the strongest human chess players years before achieving the same milestone in Go? Search-tree size explains part of the difference, but not how difficult a position is to evaluate without deep search.</p>
-        <p>With theoretical guidance from <a href="https://www.cs.toronto.edu/~guerzhoy/" target="_blank" rel="noreferrer">Professor Michael Guerzhoy</a>, I narrowed that question into a practical experiment: how much of a strong chess engine’s positional judgment could be transferred into a much smaller neural network?</p>
-        <p>The planned Go comparison was not completed within the project timeline.</p>
+        <p>I narrowed the project to approximating a chess engine’s position evaluations. The planned Go comparison was not completed within the project timeline.</p>
       </section>
 
       <section class="prose-section" aria-labelledby="experiment-title">
         <p class="section-number">02 · Experiment</p>
         <h2 id="experiment-title">Turning the question into a teacher–student system.</h2>
         <p>Modern neural-network chess engines combine position evaluation with tree search. My experiment isolated the evaluation problem by treating Leela Chess Zero, or LC0, as a teacher model. Instead of asking a smaller model to select moves or play complete games, I trained it to predict LC0’s numerical evaluation of a board position.</p>
-        <p>This is a form of knowledge distillation: a capable model produces targets that smaller models attempt to approximate. Success would suggest that useful positional knowledge could be represented compactly; failure would help characterize the limits of simple architectures.</p>
-        <aside class="ownership-callout"><strong>My contribution</strong><p>I wrote the experiment code, generated the dataset, trained the models, and analyzed the results. <a href="https://www.cs.toronto.edu/~guerzhoy/" target="_blank" rel="noreferrer">Professor Guerzhoy</a> provided theoretical guidance and helped define the experimental direction.</p></aside>
+        <p>This is a form of knowledge distillation: a capable model produces targets that smaller models attempt to approximate. Here, the targets came from LC0’s search-based analysis, rather than its neural-network output alone.</p>
       </section>
+    </article>
 
+    <section class="wide-section container" aria-label="Experiment overview">
+      <ExperimentPipeline />
+    </section>
+
+    <article class="case-body">
       <section class="prose-section" aria-labelledby="data-title">
         <p class="section-number">03 · Data pipeline</p>
         <h2 id="data-title">15,000 teacher-labelled positions.</h2>
@@ -64,6 +84,12 @@ const technologies = ["Python", "PyTorch", "NumPy", "python-chess", "Leela Chess
         </div>
         <p>The resulting workflow read each position, requested an LC0 score from White’s perspective, converted the board into a tensor, and stored the input with its teacher target for training.</p>
       </section>
+      <section class="prose-section" aria-labelledby="representation-title">
+        <p class="section-number">04 · Representation</p>
+        <h2 id="representation-title">Seven channels for piece placement.</h2>
+        <p>I tested a 12-channel representation with a separate channel for every piece-and-colour combination and a smaller seven-channel representation with six piece-type channels plus one colour channel. Neither showed a meaningful generalization advantage, so I retained the smaller 8 × 8 × 7 tensor.</p>
+        <p>The encoding captured piece type, colour, and location. It omitted side to move, castling rights, en passant state, move counters, and game history, so it did not represent the complete game state. Higher-level patterns such as king safety and pawn structure had to be learned from the spatial input.</p>
+      </section>
     </article>
 
     <section class="feature-section">
@@ -71,17 +97,10 @@ const technologies = ["Python", "PyTorch", "NumPy", "python-chess", "Leela Chess
     </section>
 
     <article class="case-body">
-      <section class="prose-section" aria-labelledby="representation-title">
-        <p class="section-number">04 · Representation</p>
-        <h2 id="representation-title">A smaller encoding with the same essential board information.</h2>
-        <p>I tested a 12-channel representation with a separate channel for every piece-and-colour combination and a smaller seven-channel representation with six piece-type channels plus one colour channel. Neither showed a meaningful generalization advantage, so I retained the smaller 8 × 8 × 7 tensor.</p>
-        <p>The encoding captured piece type, colour, and location, but not higher-level concepts such as king safety, pawn structure, mobility, tactical threats, or game history. The models had to infer useful patterns from this spatial input and LC0’s scores.</p>
-      </section>
-
       <section class="prose-section" aria-labelledby="models-title">
         <p class="section-number">05 · Student architectures</p>
         <h2 id="models-title">Nine models with increasing capacity.</h2>
-        <p>The comparison included one linear baseline, four Conv2D configurations, and four Conv3D configurations. The linear model acted like a learned piece-and-square valuation system; the convolutional models were intended to capture increasingly complex spatial relationships.</p>
+        <p>The comparison included one linear baseline, four Conv2D configurations, and four Conv3D configurations. The linear model assigned additive weights to the piece-type and colour channels at each square; the convolutional models were intended to capture more complex spatial relationships.</p>
         <p>I trained on approximately 12,000 positions and evaluated against 3,000 held-out positions using L1 loss, interpreted as mean absolute error in centipawns.</p>
       </section>
     </article>
@@ -92,25 +111,13 @@ const technologies = ["Python", "PyTorch", "NumPy", "python-chess", "Leela Chess
 
     <article class="case-body">
       <section class="prose-section" aria-labelledby="conclusion-title">
-        <p class="section-number">06 · Conclusion</p>
-        <h2 id="conclusion-title">Learning the training set was not enough.</h2>
-        <p>The linear baseline achieved a held-out mean absolute error of 205.10 centipawns. Conv2D models ranged from 215.06 to 232.96, while Conv3D models ranged from 206.73 to 215.16. None consistently improved on the baseline.</p>
-        <aside class="conclusion-callout"><p>Under this dataset, representation, training procedure, and family of shallow architectures, the convolutional students did not approximate LC0 better than a simple linear baseline on held-out positions.</p></aside>
-        <p>This does not prove that compact chess evaluation is impossible. The experiment was constrained by dataset size, compute, model selection, and the way positions were divided. Predicting a teacher’s centipawn score also measures similarity to that teacher, not playing strength.</p>
-      </section>
-
-      <section class="prose-section" aria-labelledby="retrospective-title">
-        <p class="section-number">07 · Retrospective</p>
-        <h2 id="retrospective-title">What I would change today.</h2>
+        <p class="section-number">07 · Limitations & next steps</p>
+        <h2 id="conclusion-title">What this experiment can tell us.</h2>
+        <p>The negative result applies to this dataset, encoding, training procedure, and family of shallow architectures. It does not establish that compact chess evaluation is impossible. Predicting a teacher’s centipawn score measures similarity to that teacher, not playing strength.</p>
+        <p>The experiment was constrained by dataset size, compute, model selection, and the way positions were divided. The split used held-out positions rather than a verified game-level separation, so it does not establish generalization to entirely unseen games.</p>
+        <h3 id="retrospective-title">What I would change today</h3>
         <p>I would begin with a substantially larger dataset and a reproducible game-level split. The source file stored consecutive positions from games, so complete games should be assigned between training, validation, and testing with a fixed seed. Multiple seeds would show how stable each result was.</p>
         <p>I would add constant and material-based baselines, expand the architecture search, examine the teacher-score distribution more carefully, and measure both prediction error and playing strength by placing each learned evaluator inside a search procedure.</p>
-      </section>
-
-      <section class="prose-section" aria-labelledby="reflection-title">
-        <p class="section-number">08 · Reflection</p>
-        <h2 id="reflection-title">The result changed how I design ML experiments.</h2>
-        <p>The part of this project I value most is the end-to-end system behind the experiments. I sourced the positions, configured LC0, generated the teacher-labelled dataset, built two board encodings, implemented the model families, and evaluated the results.</p>
-        <p>The distillation itself was not successful, but the project made three lessons concrete: lower training loss is not the same as learning a useful representation; more complexity is not automatically better; and negative results become valuable when the experiment is scoped carefully enough to explain what failed.</p>
       </section>
 
       <section class="project-links" aria-labelledby="links-title">
@@ -127,6 +134,8 @@ const technologies = ["Python", "PyTorch", "NumPy", "python-chess", "Leela Chess
 
       <nav class="case-nav" aria-label="Case study navigation"><a href="/#work"><span aria-hidden="true">←</span> Back to selected work</a><a href="mailto:niko.marinkovich@gmail.com">Discuss this project <span aria-hidden="true">↗</span></a></nav>
     </article>
+      </div>
+    </div>
   </main>
   <Footer />
 </BaseLayout>
@@ -140,23 +149,39 @@ const technologies = ["Python", "PyTorch", "NumPy", "python-chess", "Leela Chess
   .case-meta { margin: 0; border-top: 1px solid var(--border); }
   .case-meta div { padding: 14px 0; border-bottom: 1px solid var(--border); } .case-meta dt { color: var(--accent); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; } .case-meta dd { margin: 4px 0 0; font-size: .86rem; line-height: 1.45; }
   .case-hero .tag-list { margin-top: 40px; }
-  .wide-section { padding-bottom: 112px; }
+  .case-summary { margin: 32px 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding-block: 24px; border-block: 1px solid var(--border); }
+  .case-summary dt { font-weight: 600; }
+  .case-summary dd { margin: 8px 0 0; color: var(--muted); }
+  .case-toc { width: min(calc(100% - 48px), 1160px); margin: 0 auto 40px; }
+  .section-nav ol { margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; list-style: none; }
+  .section-nav a { display: block; padding-block: 8px; color: var(--accent); font-size: .85rem; line-height: 1.5; }
+  .case-content { min-width: 0; }
+  .case-content :global(h2) { scroll-margin-top: 48px; }
+  .wide-section { padding-bottom: 64px; }
   .case-body { width: min(calc(100% - 48px), 760px); margin-inline: auto; }
-  .prose-section { padding-block: 88px; border-top: 1px solid var(--border); }
+  .prose-section { padding-block: 56px; border-top: 1px solid var(--border); }
   .section-number { margin: 0 0 18px; color: var(--accent); font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; }
   .prose-section h2, .project-links h2 { margin: 0 0 28px; font-size: clamp(2rem, 4.5vw, 3.4rem); font-weight: 500; line-height: 1.08; letter-spacing: -.05em; }
-  .prose-section > p { margin: 20px 0 0; color: var(--muted); font-size: 1.03rem; } .prose-section .lede { color: var(--ink); font-size: 1.2rem; }
-  .ownership-callout, .conclusion-callout { margin: 36px 0 0; padding: 24px 28px; background: var(--accent-soft); border-left: 4px solid var(--accent); }
-  .ownership-callout strong { display: block; margin-bottom: 8px; } .ownership-callout p, .conclusion-callout p { margin: 0; color: var(--muted); }
-  .conclusion-callout p { color: var(--ink); font-size: 1.13rem; font-weight: 500; }
+  .prose-section > p { margin: 20px 0 0; color: var(--muted); font-size: 1.03rem; }
+  .prose-section h3 { margin: 36px 0 0; font-size: 1.4rem; font-weight: 500; }
   .inline-metrics { margin: 36px 0; display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--border); }
   .inline-metrics div { padding: 24px 14px; border-right: 1px solid var(--border); } .inline-metrics div:last-child { border: 0; } .inline-metrics strong, .inline-metrics span { display: block; } .inline-metrics strong { font-family: var(--font-mono); font-size: 1.5rem; } .inline-metrics span { margin-top: 5px; color: var(--muted); font-size: .72rem; line-height: 1.4; }
-  .feature-section { padding-block: 112px; background: var(--accent-soft); }
-  .results-section { padding-block: 112px; background: var(--surface); }
-  .project-links { margin-top: 88px; padding: 48px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; border-block: 1px solid var(--border); }
+  .feature-section { padding-block: 80px; background: var(--accent-soft); }
+  .results-section { padding-block: 80px; background: var(--surface); }
+  .project-links { padding: 48px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; border-block: 1px solid var(--border); }
   .project-links h2 { font-size: 2rem; } .project-links a { color: var(--accent); font-size: 1.05rem; font-weight: 600; } .project-links p { color: var(--muted); font-size: .85rem; }
   .source-links { display: grid; gap: 10px; }
   .case-nav { padding-block: 48px 96px; display: flex; justify-content: space-between; gap: 24px; } .case-nav a { color: var(--accent); font-weight: 500; }
-  @media (max-width: 760px) { .case-hero-grid, .project-links { grid-template-columns: 1fr; } .case-hero-grid { margin-top: 40px; gap: 44px; } .case-body { width: min(calc(100% - 32px), 760px); } .wide-section { padding-bottom: 80px; } .prose-section, .feature-section, .results-section { padding-block: 80px; } }
+  @media (min-width: 1280px) {
+    .case-layout { width: min(calc(100% - 48px), 1480px); margin-inline: auto; display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 40px; }
+    .case-toc { width: auto; margin: 0; }
+    .section-nav { position: sticky; top: 112px; padding-block: 24px; }
+    .section-nav ol { display: grid; gap: 4px; }
+    .section-nav a { padding: 8px 12px; border-left: 1px solid var(--border); text-decoration: none; }
+    .section-nav a:hover { background: var(--accent-soft); border-color: var(--accent); }
+    .case-content > .container, .case-content > section > .container { width: calc(100% - 48px); }
+  }
+  @media (max-width: 680px) { .case-toc { width: calc(100% - 32px); } .section-nav ol { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; } }
+  @media (max-width: 760px) { .case-hero-grid, .case-summary, .project-links { grid-template-columns: 1fr; } .case-hero-grid { margin-top: 40px; gap: 44px; } .case-body { width: min(calc(100% - 32px), 760px); } .wide-section { padding-bottom: 48px; } .prose-section, .feature-section, .results-section { padding-block: 48px; } }
   @media (max-width: 520px) { .inline-metrics { grid-template-columns: 1fr; } .inline-metrics div { border-right: 0; border-bottom: 1px solid var(--border); } .case-nav { flex-direction: column; } }
 </style>
