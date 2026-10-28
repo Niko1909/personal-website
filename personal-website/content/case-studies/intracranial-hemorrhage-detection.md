@@ -28,54 +28,56 @@ card_metrics:
 
 # Intracranial Hemorrhage Detection
 
-For my University of Toronto capstone, I worked in a five-person team with Trillium Health Partners to establish a deep-learning baseline for detecting hemorrhage in CT images. The intended use was to support the evaluation of commercial systems.
+For my University of Toronto capstone, I worked in a five-person team with Trillium Health Partners to establish a deep-learning baseline for determining whether intracranial hemorrhage was present in CT images and identifying its subtype(s): epidural, subdural, subarachnoid, intraparenchymal, and intraventricular. The baseline was intended to support the evaluation of commercial hemorrhage detection and classification systems.
 
-My contribution focused on DICOM preprocessing and results analysis. The team adapted an existing competition solution and evaluated its predictions on 78,545 images from the public RSNA Intracranial Hemorrhage Detection dataset. It achieved an F1 score of 0.852 for detecting any hemorrhage, while the subtype results exposed important weaknesses.
+I focused on DICOM preprocessing and results analysis. The team adapted an existing competition solution and evaluated predictions on 78,545 public test images.
+
+<aside class="result-summary" aria-label="Key finding"><strong>Overall performance hid a subtype weakness.</strong><p>The team's any-hemorrhage F1 was 0.8520, but epidural sensitivity was only 10.42%. Examining each label separately revealed what the aggregate result could not.</p></aside>
 
 ## My contribution
 
 I worked on preparing more than 500,000 DICOM images using pydicom and CT windowing, then analyzed model predictions across five hemorrhage subtypes and an overall any-hemorrhage label. I also contributed to the report's Introduction and wrote its Discussion.
 
-Other team members focused on model research, training, and Docker troubleshooting. My part of the project centred on preparing the data and interpreting what the evaluation showed.
+Other team members focused on model research, training, and Docker troubleshooting.
 
 ## Preparing CT images for the model
 
-CT images contain intensity information that can be displayed differently depending on the tissue or structure being examined. Our preprocessing used three windows: brain, subdural, and bone. Each window emphasizes a different intensity range.
+Our preprocessing used three CT windows: brain, subdural, and bone. Each emphasizes a different intensity range so the model can receive complementary views of the same slice.
 
-We used pydicom to read the image data and metadata, applied those windows, and combined the resulting views into a three-channel image for the model pipeline. This made the preprocessing inspectable through separate window images as well as the combined model input.
+We used pydicom to read the image data and metadata, applied the windows, and combined them into a three-channel image. We could inspect each window separately as well as the combined model input.
 
-The project used public RSNA data. We did not receive access to the partner's patient data during the capstone.
+The project used the public [RSNA Intracranial Hemorrhage Detection dataset](https://www.rsna.org/artificial-intelligence/ai-image-challenge/rsna-intracranial-hemorrhage-detection-challenge-2019). We did not receive access to the partner's patient data during the capstone.
 
 ## Adapting an existing model
 
-The team based the implementation on the NoBrainer competition solution, whose architecture combined a ResNeXt101 convolutional network with an LSTM that used information across CT slices.
+The team adapted the [NoBrainer competition solution](https://github.com/darraghdog/rsna), whose architecture combined a ResNeXt101 convolutional network with an LSTM that used information across CT slices.
 
 The implemented training run used downloaded embeddings produced by the original team's pretrained CNN. We trained the LSTM portion rather than retraining the CNN. The team configured the environment in a GPU-enabled Docker container on the partner's AWS EC2 instance and adapted scripts to resolve environment-specific issues.
 
-This established an environment for further experimentation. We did not complete independent CNN training or validate the full pipeline from raw DICOM input through newly generated CNN embeddings to final predictions.
+We did not complete independent CNN training or validate the full pipeline from raw DICOM input through newly generated CNN embeddings to final predictions.
 
 ## Evaluating the results
 
 I analyzed predictions on 78,545 test images. For each of the six labels, we classified probabilities above 0.5 as positive and evaluated sensitivity, specificity, F1, and accuracy.
 
-For the overall any-hemorrhage label, the report recorded:
+<figure class="metric-comparison" aria-labelledby="comparison-title">
+  <figcaption id="comparison-title">High accuracy hid weak epidural detection.</figcaption>
+  <p class="metric-note">Image-level results on the public test set. Percentage bars share a 0–100% scale.</p>
+  <table>
+    <thead><tr><th scope="col">Metric</th><th scope="col">Any hemorrhage</th><th scope="col">Epidural subtype</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Accuracy</th><td><strong>96.10%</strong><span class="metric-track" aria-hidden="true"><span style="width:96.10%"></span></span></td><td><strong>99.50%</strong><span class="metric-track" aria-hidden="true"><span style="width:99.50%"></span></span></td></tr>
+      <tr><th scope="row">Sensitivity</th><td><strong>81.44%</strong><span class="metric-track" aria-hidden="true"><span style="width:81.44%"></span></span></td><td><strong>10.42%</strong><span class="metric-track" aria-hidden="true"><span style="width:10.42%"></span></span></td></tr>
+      <tr><th scope="row">F1 score</th><td>0.8520</td><td>0.1702</td></tr>
+    </tbody>
+  </table>
+</figure>
 
-| Metric | Result |
-| --- | ---: |
-| F1 score | 0.8520 |
-| Sensitivity | 81.44% |
-| Specificity | 98.44% |
-| Accuracy | 96.10% |
+Any-hemorrhage specificity was 98.44%. These results describe individual image labels; they do not establish performance on hospital data.
 
-These are image-level results on the public test set. The overall result does not describe each subtype's performance or establish performance on hospital data.
+The test set contained substantially more negative than positive images. Epidural accuracy reached 99.50% even though sensitivity was only 10.42%, meaning the subtype classifier missed most epidural-positive images. This does not mean the separate any-hemorrhage classifier missed those same images.
 
-## Why accuracy needed context
-
-The test set contained substantially more negative than positive images. That made the high accuracy figure insufficient to describe how reliably the model identified positive cases.
-
-Epidural classification illustrated the problem: accuracy was 99.50%, but sensitivity was only 10.42% and F1 was 0.1702. The model could achieve high accuracy while missing most positive examples of that subtype. The report identified epidural hemorrhage as the least represented subtype in the training set.
-
-Reporting the metrics together made those weaknesses visible. The any-hemorrhage F1 of 0.852 is a useful summary, but subtype-level analysis is necessary to understand where the baseline struggled.
+The report identified epidural hemorrhage as the least represented subtype in the training set. Looking at sensitivity and F1 alongside accuracy made the weakness visible.
 
 ## Limits and further work
 
@@ -83,4 +85,9 @@ The project produced a working environment and a baseline evaluation on public d
 
 Further work would include completing CNN training and full-pipeline validation, evaluating on appropriately approved partner data, and investigating the weaker subtype results. We also could not make a direct leaderboard comparison: our reported log-loss calculation used a different competition stage and weighting from the published leaderboard results.
 
-The main lesson from my evaluation work was how much aggregate results can hide. Looking at sensitivity and F1 alongside accuracy, and examining each label separately, gave a more useful account of the model's strengths and limitations.
+## Sources
+
+The numerical results above are reproduced from the team's 2023 capstone final report, Table A1. The links below document the public dataset and the original implementation we adapted.
+
+- [RSNA 2019 challenge and dataset information](https://www.rsna.org/artificial-intelligence/ai-image-challenge/rsna-intracranial-hemorrhage-detection-challenge-2019)
+- [NoBrainer's original competition implementation](https://github.com/darraghdog/rsna)
