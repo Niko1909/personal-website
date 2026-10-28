@@ -36,11 +36,22 @@ const description = frontmatter.subtitle;
   .case-copy :global(h2) { margin: 64px 0 24px; padding-top: 32px; border-top: 1px solid var(--border); font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 500; line-height: 1.12; letter-spacing: -.035em; }
   .case-copy :global(p) { margin: 20px 0; color: var(--muted); font-size: 1.03rem; }
   .case-copy :global(h1 + p) { color: var(--ink); font-size: 1.15rem; }
+  .case-copy :global(.result-summary) { margin-block: 28px; padding: 24px; border-left: 4px solid var(--accent); background: var(--accent-soft); }
+  .case-copy :global(.result-summary > strong) { font-size: 1.15rem; }
+  .case-copy :global(.result-summary p) { margin: 10px 0 0; }
+  .case-copy :global(.metric-comparison) { margin: 28px 0; padding: 24px; background: var(--accent-soft); border-radius: var(--radius); }
+  .case-copy :global(.metric-comparison figcaption) { font-size: 1.3rem; font-weight: 600; line-height: 1.35; }
+  .case-copy :global(.metric-comparison .metric-note) { margin: 10px 0 0; font-size: .8rem; }
+  .case-copy :global(.metric-comparison table) { table-layout: fixed; margin: 20px 0 0; background: var(--canvas); }
+  .case-copy :global(.metric-comparison th) { font-size: .8rem; overflow-wrap: anywhere; }
+  .case-copy :global(.metric-comparison td) { font-family: var(--font-mono); font-size: .86rem; }
+  .case-copy :global(.metric-track) { display: block; height: 8px; margin-top: 10px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .case-copy :global(.metric-track > span) { display: block; height: 100%; background: var(--accent); }
   .case-copy :global(table) { width: 100%; margin-block: 28px; border-collapse: collapse; font-size: .95rem; }
   .case-copy :global(th), .case-copy :global(td) { padding: 14px 16px; border: 1px solid var(--border); }
   .case-copy :global(th) { color: var(--ink); background: var(--accent-soft); }
   .case-copy :global(td:last-child) { font-family: var(--font-mono); font-size: .86rem; }
   .case-nav { margin-top: 40px; padding-top: 28px; display: flex; justify-content: space-between; gap: 24px; border-top: 1px solid var(--border); }
   .case-nav a { color: var(--accent); font-weight: 500; }
-  @media (max-width: 520px) { .case-nav { flex-direction: column; } .case-copy :global(th), .case-copy :global(td) { padding: 12px; } }
+  @media (max-width: 520px) { .case-nav { flex-direction: column; } .case-copy :global(th), .case-copy :global(td) { padding: 12px 8px; } .case-copy :global(.metric-comparison) { padding: 20px 12px; } .case-copy :global(.metric-comparison th[scope="col"]) { font-size: .72rem; } }
 </style>
