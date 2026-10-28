@@ -16,7 +16,7 @@ for (const page of pages) {
   const html = readFileSync(join(dist, page), "utf8");
   const route = page.replaceAll("\\", "/").replace(/index\.html$/, "");
   const canonical = new URL(route, site).href;
-  const image = new URL("/og-v2.png", site).href;
+  const image = new URL("/og-v3.png", site).href;
   const expected = [
     [/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/, canonical],
     [/<meta\b[^>]*property="og:url"[^>]*content="([^"]+)"/, canonical],
