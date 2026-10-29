@@ -10,21 +10,37 @@ export const profile = {
 export const experience = [
   {
     role: "AI Developer I",
-    organization: "Intact Insurance · Data Lab",
+    organization: "Intact Insurance",
+    href: "https://www.intact.ca/",
     logo: "/company-logos/intact.svg",
-    period: "2025 to Present",
+    period: "Mar 2025 – Present",
     summary:
       "I spent a year leading frontend development for production AI applications. Since then, I’ve expanded my scope to include backend development and automated testing. I’m currently building an end-to-end test suite to improve confidence in production deployments.",
   },
   {
     role: "Software Developer Intern",
-    organization: "IBM · Canada Software Lab",
+    organization: "IBM",
+    href: "https://www.ibm.com/",
     logo: "/company-logos/ibm.svg",
-    period: "2022 to 2023",
+    period: "May 2022 – Aug 2023",
     summary:
       "Built Python automation estimated to save internal account-management teams more than 500 hours of manual work per week.",
   },
 ];
+
+export const education = {
+  institution: "University of Toronto",
+  href: "https://www.utoronto.ca/",
+  logo: "/company-logos/utoronto.webp",
+  program: "Engineering Science",
+  degree: "BASc",
+  specialization: "Machine Intelligence",
+  period: "Sep 2019 – May 2024",
+  summary:
+    "Built a broad foundation in mathematics, science, and engineering in years 1 and 2, followed by a specialization in Machine Intelligence in years 3 and 4.",
+  coursework:
+    "The Machine Intelligence curriculum covered machine learning, artificial intelligence, probabilistic reasoning, matrix algebra, and optimization.",
+};
 
 export const productionWork = {
   title: "Production AI engineering at Intact",
@@ -54,7 +70,7 @@ const chessProject = {
 export const academicProjects = [
   {
     title: chessProject.title,
-    period: "Undergraduate thesis · 2024",
+    period: "Undergraduate thesis · Sep 2023 - May 2024",
     summary: chessProject.summary,
     technologies: chessProject.technologies,
     href: "/work/distilling-chess-intelligence/",
@@ -62,7 +78,7 @@ export const academicProjects = [
   },
   {
     title: hemorrhage.card_title as string,
-    period: "Engineering capstone · 2023",
+    period: `Engineering capstone · ${hemorrhage.date}`,
     summary: hemorrhage.card_summary as string,
     technologies: ["Python", "pydicom", "Medical imaging", "Model evaluation"],
     href: "/work/intracranial-hemorrhage-detection/",

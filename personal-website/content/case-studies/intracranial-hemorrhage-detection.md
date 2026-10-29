@@ -3,12 +3,14 @@ title: "Intracranial Hemorrhage Detection"
 subtitle: "Preparing CT images and evaluating a deep-learning baseline with Trillium Health Partners."
 slug: "intracranial-hemorrhage-detection"
 status: "First implementation authorized; detailed content review deferred by Nikolas on October 26, 2026"
-date: "September to December 2023"
+date: "Sep 2023 - Dec 2023"
 project_type: "Engineering capstone"
 institution: "University of Toronto"
 partner: "Trillium Health Partners"
 team_size: 5
 role: "Data preprocessing and results analysis"
+contribution: "I prepared CT images using DICOM preprocessing and CT windowing, analyzed model predictions, and wrote the report’s Discussion. Other team members focused on model research, training, and Docker troubleshooting."
+outcome: "On 78,545 public test images, the team’s any-hemorrhage F1 was 0.8520, but epidural sensitivity was only 10.42%. The evaluation revealed a subtype weakness; it did not establish clinical readiness."
 featured: false
 technologies:
   - Python
@@ -26,13 +28,11 @@ card_metrics:
     label: "F1 for any-hemorrhage detection"
 ---
 
-# Intracranial Hemorrhage Detection
+## Project context
 
 For my University of Toronto capstone, I worked in a five-person team with Trillium Health Partners to establish a deep-learning baseline for determining whether intracranial hemorrhage was present in CT images and identifying its subtype(s): epidural, subdural, subarachnoid, intraparenchymal, and intraventricular. The baseline was intended to support the evaluation of commercial hemorrhage detection and classification systems.
 
 I focused on DICOM preprocessing and results analysis. The team adapted an existing competition solution and evaluated predictions on 78,545 public test images.
-
-<aside class="result-summary" aria-label="Key finding"><strong>Overall performance hid a subtype weakness.</strong><p>The team's any-hemorrhage F1 was 0.8520, but epidural sensitivity was only 10.42%. Examining each label separately revealed what the aggregate result could not.</p></aside>
 
 ## My contribution
 

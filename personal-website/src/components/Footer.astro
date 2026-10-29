@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
   <div class="container footer-inner">
     <p>© {year} {profile.name}</p>
     <nav aria-label="Footer navigation">
-      <a href={`mailto:${profile.email}`}>Email</a>
+      {Astro.url.pathname !== "/" && <a href={`mailto:${profile.email}`}>Email</a>}
       <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a>
       <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
     </nav>

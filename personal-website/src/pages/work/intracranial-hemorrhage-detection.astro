@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+import "../../styles/case-study.css";
 import { Content, frontmatter } from "../../../content/case-studies/intracranial-hemorrhage-detection.md";
 
 const title = `${frontmatter.title} · Nikolas Marinkovich`;
@@ -10,17 +11,34 @@ const description = frontmatter.subtitle;
 
 <BaseLayout {title} {description}>
   <Header />
-  <main id="top" class="medical-case container" tabindex="-1">
-    <a class="back-link" href="/#work"><span aria-hidden="true">←</span> Selected work</a>
-    <p class="eyebrow">Engineering capstone · University of Toronto · 2023</p>
-    <article class="case-copy" aria-label="Intracranial Hemorrhage Detection case study">
+  <main id="top" tabindex="-1">
+    <header class="case-hero container">
+      <a class="back-link" href="/#work"><span aria-hidden="true">←</span> Selected work</a>
+      <div class="case-hero-grid">
+        <div>
+          <p class="eyebrow">{frontmatter.project_type} · {frontmatter.date}</p>
+          <h1>{frontmatter.title}</h1>
+          <p class="case-subtitle">{frontmatter.subtitle}</p>
+        </div>
+        <dl class="case-meta">
+          <div><dt>Institution</dt><dd>{frontmatter.institution}</dd></div>
+          <div><dt>Partner</dt><dd>{frontmatter.partner}</dd></div>
+          <div><dt>Team</dt><dd>{frontmatter.team_size} members</dd></div>
+        </dl>
+      </div>
+      <ul class="tag-list" aria-label="Project technologies">
+        {frontmatter.technologies.map((technology: string) => <li>{technology}</li>)}
+      </ul>
+      <dl class="case-summary">
+        <div><dt>My contribution</dt><dd>{frontmatter.contribution}</dd></div>
+        <div><dt>Outcome</dt><dd>{frontmatter.outcome}</dd></div>
+      </dl>
+    </header>
+    <article class="case-body case-copy" aria-label="Intracranial Hemorrhage Detection case study">
       <Content />
     </article>
-    <ul class="tag-list" aria-label="Project technologies">
-      {frontmatter.technologies.map((technology: string) => <li>{technology}</li>)}
-    </ul>
-    <nav class="case-nav" aria-label="Case study navigation">
-      <a href="/#work"><span aria-hidden="true">←</span> Back to selected work</a>
+    <nav class="case-body case-nav" aria-label="Case study navigation">
+      <a href="/#work"><span aria-hidden="true">←</span> Back to featured work</a>
       <a href="/work/distilling-chess-intelligence/">Explore the chess case study <span aria-hidden="true">→</span></a>
     </nav>
   </main>
@@ -28,17 +46,7 @@ const description = frontmatter.subtitle;
 </BaseLayout>
 
 <style>
-  .medical-case { max-width: 808px; padding-block: clamp(56px, 8vw, 96px); }
-  .back-link { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: .86rem; }
-  .medical-case > .eyebrow { margin: 48px 0 20px; }
   .case-copy { min-width: 0; }
-  .case-copy :global(h1) { margin: 0 0 32px; font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 500; line-height: 1.02; letter-spacing: -.055em; }
-  .case-copy :global(h2) { margin: 64px 0 24px; padding-top: 32px; border-top: 1px solid var(--border); font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 500; line-height: 1.12; letter-spacing: -.035em; }
-  .case-copy :global(p) { margin: 20px 0; color: var(--muted); font-size: 1.03rem; }
-  .case-copy :global(h1 + p) { color: var(--ink); font-size: 1.15rem; }
-  .case-copy :global(.result-summary) { margin-block: 28px; padding: 24px; border-left: 4px solid var(--accent); background: var(--accent-soft); }
-  .case-copy :global(.result-summary > strong) { font-size: 1.15rem; }
-  .case-copy :global(.result-summary p) { margin: 10px 0 0; }
   .case-copy :global(.metric-comparison) { margin: 28px 0; padding: 24px; background: var(--accent-soft); border-radius: var(--radius); }
   .case-copy :global(.metric-comparison figcaption) { font-size: 1.3rem; font-weight: 600; line-height: 1.35; }
   .case-copy :global(.metric-comparison .metric-note) { margin: 10px 0 0; font-size: .8rem; }
@@ -51,7 +59,5 @@ const description = frontmatter.subtitle;
   .case-copy :global(th), .case-copy :global(td) { padding: 14px 16px; border: 1px solid var(--border); }
   .case-copy :global(th) { color: var(--ink); background: var(--accent-soft); }
   .case-copy :global(td:last-child) { font-family: var(--font-mono); font-size: .86rem; }
-  .case-nav { margin-top: 40px; padding-top: 28px; display: flex; justify-content: space-between; gap: 24px; border-top: 1px solid var(--border); }
-  .case-nav a { color: var(--accent); font-weight: 500; }
-  @media (max-width: 520px) { .case-nav { flex-direction: column; } .case-copy :global(th), .case-copy :global(td) { padding: 12px 8px; } .case-copy :global(.metric-comparison) { padding: 20px 12px; } .case-copy :global(.metric-comparison th[scope="col"]) { font-size: .72rem; } }
+  @media (max-width: 520px) { .case-copy :global(th), .case-copy :global(td) { padding: 12px 8px; } .case-copy :global(.metric-comparison) { padding: 20px 12px; } .case-copy :global(.metric-comparison th[scope="col"]) { font-size: .72rem; } }
 </style>

@@ -4,6 +4,16 @@ import test from "node:test";
 
 const readPage = (path) => readFileSync(new URL(`../dist/${path}/index.html`, import.meta.url), "utf8");
 
+test("email appears once per page, in homepage contact or case-study footer", () => {
+  for (const route of [".", "work/distilling-chess-intelligence", "work/intracranial-hemorrhage-detection"]) {
+    const html = readPage(route);
+    assert.equal([...html.matchAll(/href="mailto:/g)].length, 1);
+    const footer = html.match(/<footer\b[^>]*>(.*?)<\/footer>/s)?.[1];
+    assert(footer, "Page has a footer");
+    assert.equal(footer.includes('href="mailto:'), route !== ".");
+  }
+});
+
 test("homepage illustration has 64 squares and a sample LC0 target in centipawns", () => {
   const html = readPage(".");
   const board = html.match(/<div class="mini-board"[^>]*>(.*?)<\/div>/s)?.[1];

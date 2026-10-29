@@ -2,13 +2,13 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import SectionHeading from "../components/SectionHeading.astro";
 import ChessSignal from "../components/ChessSignal.astro";
 import { Image } from "astro:assets";
 import hemorrhageSlices from "../assets/hemorrhage-ct-slices.png";
 import {
   profile,
   experience,
+  education,
   productionWork,
   academicProjects,
   capabilities,
@@ -38,18 +38,17 @@ import {
 
     <section id="experience" class="section container" aria-labelledby="experience-title">
       <div class="simple-section-heading">
-        <h2 id="experience-title" class="eyebrow">Experience</h2>
+        <h2 id="experience-title" class="section-title">Experience</h2>
       </div>
       <div class="experience-list">
         {experience.map((item) => (
           <article class="experience-item">
             <div class="experience-meta">
-              <p>{item.period}</p>
-              <h3>{item.role}</h3>
-              <p class="experience-company">
-                <img class="company-logo" src={item.logo} alt="" width="64" height="40" loading="lazy" />
-                <span>{item.organization}</span>
-              </p>
+              <img class="experience-logo company-logo" src={item.logo} alt="" width="64" height="48" loading="lazy" />
+              <div>
+                <h3>{item.role} <span class="experience-organization">@ <a href={item.href} target="_blank" rel="noreferrer">{item.organization}</a></span></h3>
+                <p class="experience-period">{item.period}</p>
+              </div>
             </div>
             <div>
               <p class="experience-summary">{item.summary}</p>
@@ -57,11 +56,32 @@ import {
           </article>
         ))}
       </div>
+      <section class="education-section" aria-labelledby="education-title">
+        <div class="simple-section-heading">
+          <h2 id="education-title" class="section-title">Education</h2>
+        </div>
+        <article class="experience-item education-item">
+          <div class="experience-meta">
+            <img class="experience-logo" src={education.logo} alt="" width="64" height="48" loading="lazy" />
+            <div>
+              <h3>{education.program} <span class="experience-organization">@ <a href={education.href} target="_blank" rel="noreferrer">{education.institution}</a></span></h3>
+              <p>{education.degree} · {education.specialization}</p>
+              <p class="experience-period">{education.period}</p>
+            </div>
+          </div>
+          <div>
+            <p class="experience-summary">{education.summary}</p>
+            <p class="experience-summary education-coursework">{education.coursework}</p>
+          </div>
+        </article>
+      </section>
     </section>
 
     <section id="work" class="section work-section" aria-labelledby="work-title">
       <div class="container">
-        <SectionHeading id="work-title" eyebrow="Selected work" title="Production engineering & applied research." />
+        <div class="simple-section-heading">
+          <h2 id="work-title" class="section-title">Featured work</h2>
+        </div>
         <article class="production-feature" aria-labelledby="production-title">
           <div class="production-heading">
             <p class="eyebrow light">Professional experience</p>
@@ -100,7 +120,7 @@ import {
 
     <section class="section container" aria-labelledby="profile-title">
       <div class="simple-section-heading">
-        <h2 id="profile-title" class="eyebrow">Tools I work with</h2>
+        <h2 id="profile-title" class="section-title">Tools I work with</h2>
       </div>
       <div class="capability-grid">
         {capabilities.map((capability) => (
@@ -116,14 +136,8 @@ import {
 
     <section id="contact" class="contact-section" aria-labelledby="contact-title">
       <div class="container contact-inner">
-        <div>
-          <p class="eyebrow">Let’s connect</p>
-          <h2 id="contact-title">Get in touch.</h2>
-        </div>
-        <div>
-          <p>For engineering opportunities or a conversation about my work:</p>
-          <a class="contact-link" href={`mailto:${profile.email}`}>{profile.email} <span aria-hidden="true">↗</span></a>
-        </div>
+        <h2 id="contact-title">Let’s talk!</h2>
+        <a class="contact-link" href={`mailto:${profile.email}`}>{profile.email} <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
