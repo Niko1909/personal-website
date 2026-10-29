@@ -88,15 +88,15 @@ export const academicProjects = [
 
 export const capabilities = [
   {
-    title: "AI & machine learning",
-    skills: ["PyTorch", "TensorFlow", "scikit-learn", "Computer vision"],
-  },
-  {
     title: "Product engineering",
     skills: ["TypeScript", "React", "FastAPI", "PostgreSQL", "Vitest & pytest"],
   },
   {
     title: "Cloud & infrastructure",
     skills: ["AWS", "Terraform", "Docker", "GitLab CI/CD", "Linux"],
+  },
+  {
+    title: "AI & machine learning",
+    skills: ["PyTorch", "TensorFlow", "scikit-learn", "Computer vision"],
   },
 ];
